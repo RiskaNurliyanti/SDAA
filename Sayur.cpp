@@ -1,27 +1,36 @@
 #include <iostream>
-#include <string>
-#include <iomanip>
-
+#include <fstream>
+#include <math.h>       /* sqrt */
+#include<conio.h>
+#include<bits/stdc++.h>
 using namespace std;
 
+struct Item {
+	int id;
+	string nama;
+	string jenis;
+	string warna;
+	int harga;
+	int stok;
+};
 
+struct Node {
+	int data;
+	struct Node *next;
+    struct Node *prev;
+	Item tanaman[100];
+};
+Node* head = NULL, *tail = NULL, *del;
 
-
-
-void liat_barang(string nama_barang[40], int stok[40], int harga[40], int size){	
-	cout<<"------------------------------------------------------------------"<<endl;
-	for (int i=0;i<size;i++){
-		cout<<i+1<<"\t"<<nama_barang[i]<<"\t\t"<<stok[i]<<"\t\t"<<harga[i]<<endl; //Menampilkan semua nilai array
-	}
-}
-
-
-void liat_orang(string nama_pembeli[40], string barang_dibeli[40], int harga_barang_dibeli[40], int jumlah_barang_dibeli[40], int total_barang_dibeli[40], int size_orang) {
-	for (int i=0;i<size_orang;i++){
-		cout<<i+1<<"\t"<<nama_pembeli[i]<<"\t\t"<<barang_dibeli[i]<<"\t\t"<<harga_barang_dibeli[i]<<"\t\t"<<jumlah_barang_dibeli[i]<<"\t\t"<<total_barang_dibeli[i]<<endl; //Menampilkan semua nilai array
-	}
-}
-
+int size = 0;
+void buatDaftarTanaman(Node **head, Node **tail);
+void tambahTanaman(Node **head, Node **tail, int insert);
+void ubahTanaman(Node *data, int &pilih);
+void liatTanaman(Node *dataHead, Node *dataTail, char pos);
+void hapusTanaman(struct Node** data, int &posHapus);
+void sortMenu(Node *data, int arr[], int menu, string order);
+void shellSort(int arr[], int &size, string order);
+int jumpSearch(int arr[], int x, int &size);
 
 int menu_awal(){
 	int pilih0;
@@ -31,150 +40,335 @@ int menu_awal(){
 	cin.get();
 	cout<<"\t\t Daftar Menu "<<endl;
 	cout<<"\t-----------------------------"<<endl;
-	cout<<"|1.	Buat Daftar Barang		|"<<endl;
-	cout<<"|2. 	Lihat Daftar Barang		|"<<endl;
-	cout<<"|3. 	Update Daftar Barang 		|"<<endl;
-	cout<<"|4.	Hapus Daftar Barang		|"<<endl;
-	cout<<"|5.	Daftar Penjualan		|"<<endl;
-	cout<<"|6.	Keluar				|"<<endl;
-	cout<<" "<<endl;
+	cout<<"|1.	Buat Daftar Barang	    "<<endl;
+	cout<<"|2. 	Lihat Daftar Barang		"<<endl;
+	cout<<"|3. 	Tambah Daftar Barang	"<<endl;
+	cout<<"|4. 	Update Barang			"<<endl;
+	cout<<"|5.	Hapus Daftar Barang		"<<endl;
+	cout<<"|6.  	Urutan Daftar Barang            "<<endl;
+	cout<<"|7.  	Cari Daftar Barang            "<<endl;
+	cout<<"|8.	Simpan Barang ke File Eksternal	"<<endl;
+	cout<<"|9.	Keluar					"<<endl;
 	
+	cout<<" "<<endl;
 	cout<<"Pilih Menu Yang Anda Inginkan :"; 
 	cin>>pilih0;
 	return pilih0;
 }
 
 int main(){	
-
-	string nama_barang[40] 			= {"Lili Paris", "Miana Api", "Aglonemea"};
-	int stok[40] 					= {6, 7, 4};
-	int harga[40] 					= {4000, 10000, 80000};
-	string nama_pembeli[40] 		= {"Udin", "Budi"};
-	string barang_dibeli[40] 		= {nama_barang[0], nama_barang[2]};
-	int harga_barang_dibeli[40] 	= {harga[0], harga[2]};
-	int jumlah_barang_dibeli[40] 	= {4, 1};
-	int total_barang_dibeli[40] 	= {16000, 80000};
-	
-	int size = 3, size_orang = 2;
-	int menu_jual, temp1, pos_ubah, pos_hapus;
+	int jumlah, temp1, posUbah, posHapus;
+    Node *temp = head;
 	int pilih1=0;
-	char lanjut='0';	
+	char lanjut;	
 	string temp0;
-	
-	while(pilih1 != 6){
-		
-		pilih1 = menu_awal();
-		
-		switch(pilih1){
-			case 1:
-				cout << "Buat Daftar Barang" << endl;
-				cout<<"Masukan Jumlah Daftar Barang Yang Ingin Dijual : ";
-				cin>>menu_jual; //Pengguna memasukan jumlah beli
-				
-				for (int i = 0; i<menu_jual;i++){
-					
-					cout<<endl;
-					cout<<"Masukan Barang Ke- "<<i+1<<endl;
-					
-					cout<<"Masukkan nama barang :  ";
-					cin.ignore();
-					getline (cin,temp0);
-					nama_barang[size] = temp0;
-			
-					cout<<"Masukkan harga barang :  ";
-					cin>>temp1;
-					harga[size] = temp1;
-					
-					cout<<"Stok Barang : ";
-					cin>>temp1;
-					stok[size] = temp1;
-					
-					
-					size++;
-				};	
-				cout<<"------------------------------------------------------------------"<<endl;
-				for (int i = 0; i<menu_jual; i++){
-					cout<<" "<<endl;
-					cout<<i+1<<endl;
-					cout<<"Nama Barang : "<<nama_barang[i]<<endl;
-					cout<<"Stok Barang : "<<stok[i]<<endl;
-					cout<<"Harga       :"<<harga[i]<<endl;
-				}	
-				cout<<"-------------------------------------------------------------------"<<endl;
-				cin.get();
-				
-				
-				break;
-			case 2:
-				cout << "Daftar Barang" <<endl;
-				liat_barang(nama_barang, stok, harga, size);
-				break;
-			case 3:
-				cout << "Update Daftar Barang" << endl;
-				
-				cout<<"Masukkan index barang yg mau diubah :  ";
-				cin>>pos_ubah;
-				cout << pos_ubah << " \nNama Tanaman : " <<nama_barang[pos_ubah]<< " \tHarga : " << harga[pos_ubah]<< " \tStok : " <<stok[pos_ubah]<<"\n\n\n"<<endl;
-				
-				cout<<"\n\nMasukkan nama barang baru:  ";
-				cin.ignore();
-				getline (cin, temp0);
-				nama_barang[pos_ubah] = temp0;
-				cout<<"Harga barang baru:  ";
-				cin>>temp1;
-				harga[pos_ubah] = temp1;
-				cin.ignore();
-				cout<<"Stok barang baru: ";
-				cin>>temp1;
-				stok[pos_ubah] = temp1;
-				break;
-			case 4:
-				cout << "Hapus Daftar Barang" << endl;
-				cout<<"Masukkan _id yang ingin anda hapus :  ";
-				cin>>pos_hapus;
-				cout<<"Berhasil!!\n\n\n";
-				for (int i = pos_hapus; i < size; i++){ //dipindah ke elemen yang dihapus
-					nama_barang[i] = nama_barang[i + 1];
-					harga[i] = harga[i + 1];
-					stok[i] = stok[i + 1];
-		    	};
-		    	size--;
-				break;
-			case 5:
-				cout << "Daftar Penjualan" << endl;
-				liat_orang(nama_pembeli, barang_dibeli, harga_barang_dibeli, jumlah_barang_dibeli, total_barang_dibeli, size_orang);
-				break;
-			case 6:
-				cout<<"\tTerimakasih Telah Menggunakan Program Ini"<<endl; //Y
-				break;
-			default:
-				cout << "Pilihan tidak ditemukan" << endl; //Y
-				break;
-		}
-		
-		
-		if (pilih1 != '6') {
-			cout << "\n\nLanjutkan?(y/n) : ";
-			cin >> lanjut;
-			while (lanjut == '0') {
-				if ( (lanjut == 'y') | (lanjut == 'Y')){
-					pilih1 = menu_awal();
-				} else if ((lanjut == 'n') | (lanjut == 'N')){
-					pilih1 = '6';
-				} else {
-					cout<<"Pilihan anda salah!";
-					continue;
-				}
-		}
-		}
-	}
-
-	cout << "Terimakasih Telah Menggunakan Program Ini" << endl;
-
-	cin.get();
+    int arr[size] = {};
+    pilih1 = menu_awal();
+    ofstream file ("tanaman.csv", fstream::app);
+    
+    switch(pilih1) {
+        case 1:
+            cout << "Tambah Daftar Barang" << endl;
+            cout << "Masukan Jumlah Daftar Barang Yang Ingin Dijual : ";
+            cin >> jumlah; //Pengguna memasukan jumlah beli
+            for(int i = 0; i < jumlah; i++) {
+                buatDaftarTanaman(&head, &tail);
+                cout<<"\n\nBerhasil!!!";
+            }
+            main();
+            break;
+        case 2:
+            cout << "Daftar Barang" <<endl;
+            if(size == 0){
+                cout<<"Masih Kosong";
+                main();
+            } else {
+                char pos;
+                cout << "[1] Head ke tail" << endl;
+                cout << "[2] Tail ke head" << endl;
+                cout << "Menampilkan dari: "; cin >> pos;
+                liatTanaman(head, tail, pos);
+                main();
+            }
+            break;
+        case 3:
+            int insert;
+            cout << "Tambah Daftar Barang" << endl;
+            cout << "[1] Depan" << endl;
+            cout << "[2] Belakang" << endl;
+            if(size >= 2) {
+                cout << "[3] Posisi Mana Saja" << endl;
+            }
+            cout << "Menambah dari: "; cin >> insert;
+            tambahTanaman(&head, &tail, insert);
+            main();
+            break;
+        case 4:
+            cout << "Update Daftar Barang" << endl;
+            liatTanaman(head, tail, '1');
+            cout<<"Masukkan id barang yg mau diubah :  ";
+            cin>>posUbah;
+            ubahTanaman(head, posUbah);
+            cout << "Data Berhasil Diubah!" << endl;
+            main();
+            break;
+        case 5:
+            liatTanaman(head, tail, '1');
+            cout<<"Menghapus posisi ke :  ";
+            cin>>posHapus;
+            hapusTanaman(&head, posHapus);
+            main();
+            break;
+        case 6:
+            liatTanaman(head, tail, '1');
+            cout<<"Daftar Urutan Barang Berdasarkan Harga Secara Ascending"<<endl;
+            arr[size] = {};
+            sortMenu(head, arr, 1, "Ascending");
+            cout<<"-----------------------------------------------"<<endl;
+            cout<<"Daftar Urutan Barang Berdasarkan Harga Secara Descending"<<endl;
+            arr[size] = {};
+            sortMenu(head, arr, 1, "Descending");
+            cout<<"-----------------------------------------------"<<endl;
+            cout<<"Daftar Urutan Barang Berdasarkan Stok Secara Ascending"<<endl;
+            arr[size] = {};
+            sortMenu(head, arr, 2, "Ascending");
+            cout<<"-----------------------------------------------"<<endl;
+            cout<<"Daftar Urutan Barang Berdasarkan Stok Secara Descending"<<endl;
+            arr[size] = {};
+            sortMenu(head, arr, 2, "Descending");
+            main();
+            break;	
+        case 7:
+            int x, foundItems;
+            arr[size] = {};
+            sortMenu(head, arr, 1, "Ascending");
+            cout<<"Masukkan Harga Barang Yang Anda Cari : "<<endl;
+            cin>>x;
+            cout<<"Cari Daftar Barang"<<endl;
+            liatTanaman(head, tail, '1');
+            foundItems = jumpSearch(arr, x, size);
+            cout << "\nData Barang " << x << " Berada Pada Index Ke-" << foundItems<<endl;
+            main();
+            break;
+        case 8:
+            file << "ID, Nama, Jenis, Warna, Harga, Stok\n";
+            while(temp != NULL) {
+            	file <<temp->tanaman->id<<","<<temp->tanaman->nama<<","<<temp->tanaman->jenis<<","<<temp->tanaman->warna<<","<<temp->tanaman->harga<<","<<temp->tanaman->stok<<"\n";
+                temp = temp->next;
+            }
+            file.close();
+            main();
+            break;
+        case 9:
+	        cout << "Terimakasih Telah Menggunakan Program Ini" << endl;
+            exit(0);
+            break;
+    }
 	return 0;
 }
 
+void buatDaftarTanaman(Node **head, Node **tail) {
+    Node *newNode = new Node();
+    newNode->data = size;
 
+    cout<<"\nMasukkan nama barang :  ";	fflush(stdin);getline(cin,newNode->tanaman->nama);
+    cout<<"Masukkan jenis barang :  "; 	fflush(stdin);getline(cin,newNode->tanaman->jenis);
+    cout<<"Masukkan warna barang :  "; 	fflush(stdin);getline(cin,newNode->tanaman->warna);
+    cout<<"Masukkan harga barang :  "; 	cin>>newNode->tanaman->harga;
+    cout<<"Masukkan stok barang :  " ;	cin>>newNode->tanaman->stok;
+    cout<<"\n-----------------------------------\n";
+    newNode->tanaman->id = size+1;
+    size++;
+    newNode->next == NULL;
+    if(*head == NULL) {
+        *head = newNode;
+        *tail = newNode;
+        return;
+    }
+    newNode->prev = *tail;
+    newNode->next = NULL;
+    (*tail)->next = newNode;
+    (*tail) = newNode;
+    return;
+}
 
+void liatTanaman(Node *dataHead, Node *dataTail, char pos){	
+	cout<<"------------------------------------------------------------------"<<endl;
+    if(pos == '1') {
+        while(dataHead != NULL) {
+            cout<< "id \t: " <<dataHead->tanaman->id << "\n";
+            cout<< "Nama \t: " <<dataHead->tanaman->nama << "\n";
+            cout<< "Jenis \t: "<<dataHead->tanaman->jenis<< "\n";
+            cout<< "Warna \t: "<<dataHead->tanaman->warna<< "\n";
+            cout<< "Harga \t: "<<dataHead->tanaman->harga<<"\n";
+            cout<< "Stok \t: "<<dataHead->tanaman->stok<<"\n\n"<<endl;
+            dataHead = dataHead->next;
+        }
+    } else if(pos == '2') {
+        while(dataTail != NULL) {
+            cout<< "id \t: " <<dataTail->tanaman->id << "\n";
+            cout<< "Nama \t: " <<dataTail->tanaman->nama << "\n";
+            cout<< "Jenis \t: "<<dataTail->tanaman->jenis<< "\n";
+            cout<< "Warna \t: "<<dataTail->tanaman->warna<< "\n";
+            cout<< "Harga \t: "<<dataTail->tanaman->harga<<"\n";
+            cout<< "Stok \t: "<<dataTail->tanaman->stok<<"\n\n"<<endl;
+            dataTail = dataTail->prev;
+        }
+    }
+}
 
+void tambahTanaman(Node **head, Node **tail, int insert) {
+    Node *newNode = new Node();
+    newNode->data = size;
+
+    cout<<"\nMasukkan nama barang :  ";	fflush(stdin);getline(cin,newNode->tanaman->nama);
+    cout<<"Masukkan jenis barang :  "; 	fflush(stdin);getline(cin,newNode->tanaman->jenis);
+    cout<<"Masukkan warna barang :  "; 	fflush(stdin);getline(cin,newNode->tanaman->warna);
+    cout<<"Masukkan harga barang :  "; 	cin>>newNode->tanaman->harga;
+    cout<<"Masukkan stok barang :  " ;	cin>>newNode->tanaman->stok;
+    cout<<"\n-----------------------------------\n";
+    newNode->tanaman->id = size+1;
+    size++;
+    newNode->next == NULL;
+    if(*head == NULL) {
+        *head = newNode;
+        *tail = newNode;
+        return;
+    } else {
+        if(insert == 1) {
+            newNode->prev = NULL;
+            newNode->next = *head;
+            (*head)->prev = newNode;
+            (*head) = newNode;
+            return;
+        } else if(insert == 2) {
+            newNode->prev = *tail;
+            newNode->next = NULL;
+            (*tail)->next = newNode;
+            (*tail) = newNode;
+            return;
+        } else if(insert == 3) {
+            int dari;
+            cout << "Menambah di posisi ke-"; cin >> dari;
+            Node *cur = *head;
+            for(int n = 1; n < dari-1; n++) {
+                cur = cur->next;
+            }
+            Node *afterNode = cur->next;
+            newNode->prev = cur;
+            newNode->next = afterNode;
+            cur->next = newNode;
+            afterNode->prev = newNode;
+            return;
+        }
+    }
+}
+
+void ubahTanaman(Node *data, int &pilih) {
+    while(data != NULL) {
+        if(data->tanaman->id == pilih) {
+            cout<<"\nMasukkan nama barang :  " ;	fflush(stdin);getline(cin,data->tanaman->nama);
+            cout<<"Masukkan jenis barang :  "; 	fflush(stdin);getline(cin,data->tanaman->jenis);
+            cout<<"Masukkan warna barang :  "; 	fflush(stdin);getline(cin,data->tanaman->warna);
+            cout<<"Masukkan harga barang :  "; 	cin>>data->tanaman->harga;
+            cout<<"Masukkan stok barang :  " ;	cin>>data->tanaman->stok;
+            cout<<"\n-----------------------------------\n";
+            return;
+        }
+        data = data->next;
+    }
+	cout << "\nId siswa tidak ditemukan!\n";
+	return;
+}
+
+void hapusTanaman(struct Node** data, int &posHapus){
+	if (data == NULL) {
+		cout << "\nData tidak ditemukan!\n";
+		return;
+	} else {
+        Node *cur = *data;
+        for(int n = 1; n < posHapus-1; n++) {
+            cur = cur->next;
+        }
+        Node *hapus = cur->next;
+        Node *afterNode = hapus->next;
+        cur->next = afterNode;
+        afterNode->prev = cur;
+        size--;
+        delete hapus;
+        cout<<"\nData telah terhapus!\n";
+        return;
+    }
+}
+
+void sortMenu(Node *data, int arr[], int menu, string order) {
+	Node *head2 = data;
+	string arr2d[size][6] = {};
+
+    int i = 0;
+	if(menu == 1) {
+		while(head2 != NULL) {
+			arr[i] = head2->tanaman->harga;
+			i++;
+			head2 = head2->next;
+		}
+	} else if(menu == 2)  {
+		while(head2 != NULL) {
+			arr[i] = head2->tanaman->stok;
+			i++;
+			head2 = head2->next;
+		}
+	}
+    shellSort(arr, size, order);
+    for(int r = 0; r < size; r++) {
+        cout << arr[r] << " ";
+    } cout << endl;
+    return;
+}
+
+void shellSort(int arr[], int &size, string order){
+	for (int gap = size/2; gap > 0; gap /= 2) {
+        if(order == "Ascending") {
+            for (int i = gap; i < size; i += 1) {
+                int temp = arr[i];
+                int j;
+                for (j = i; j >= gap &&  arr[j-gap] > temp; j -= gap){
+                    arr[j] = arr[j - gap];
+                }
+                arr[j] = temp;
+            }
+        }
+        else if(order == "Descending") {
+            for (int i = gap; i < size; i += 1) {
+                int temp = arr[i];
+                int j;
+                for (j = i; j >= gap &&  arr[j-gap] < temp; j -= gap){
+                    arr[j] = arr[j - gap];
+                }
+                arr[j] = temp;
+            }
+        }
+	}
+}
+
+int jumpSearch(int arr[], int x, int &size){
+	int step = sqrt(size);
+	int prev = 0;
+	while (arr[min(step, size)-1] < x){
+		prev = step;
+		step += sqrt(size);
+		if (prev >= size) {
+		    return -1;
+		}
+    }
+	while (arr[prev] < x){
+		prev++;
+		if (prev == min(step, size)) {
+		    return -1;
+		}
+    }
+    if (arr[prev] == x) {
+        return prev;
+    }
+	return -1;
+}
